@@ -4,6 +4,17 @@ import json
 from nsepython import *
 import requests
 
+from st_pages import Page, show_pages, add_page_title
+add_page_title()
+
+# Specify what pages should be shown in the sidebar, and what their titles and icons
+# should be
+show_pages(
+    [
+        Page("streamlit_app.py", "Summary Page", "🏠"),
+        Page("pages/Industry_Wise_Change.py", "Industry Wise Change", ":books:"),
+    ]
+)
 # Set page title and layout
 st.set_page_config(
     page_title="NSE Stock Data",

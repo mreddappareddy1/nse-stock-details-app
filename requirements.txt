@@ -2,3 +2,4 @@ streamlit
 nsepython
 plotly
 jugaad-data
+st-pages
