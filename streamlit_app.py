@@ -42,12 +42,7 @@ def fetch_top_losers():
     toplosers = nse_get_top_losers()
     return toplosers
 
-empty_row1, _ = st.columns(2)
-empty_row2, _ = st.columns(2)
 top_row = st.container()
-
-col1, col2 = st.columns(2) 
-col3, col4 = st.columns(2)
 
 # Button to trigger data refresh
 with top_row:
@@ -58,31 +53,52 @@ if refresh_button:
     data = 1
 
 #Nifty summary
-with col1:
+with st.container():
     st.header("Market Summary")
     if data:
-        filterlist = ['NIFTY 50','NIFTY BANK','INDIA VIX','NIFTY MIDCAP 50','NIFTY MID SELECT','NIFTY FIN SERVICE']
+        filterlist = ['NIFTY 50','NIFTY BANK','INDIA VIX'] #,'NIFTY MIDCAP 50','NIFTY MID SELECT','NIFTY FIN SERVICE']
         filtered_data = tempdata[tempdata['indexName'].isin(filterlist)]
-        neworder = ['indexName','last','previousClose','percChange']
+        neworder = ['indexName','last','percChange']
         filtered_data = filtered_data[neworder]
         filtered_data = filtered_data.reset_index(drop=True)
-        st.write(filtered_data)
+        num_cols = 3
+        i =0
+        cols = st.columns(num_cols)
+        metric_card_container = st.container()
+        for indexName, last, percChange  in filtered_data[neworder].itertuples(index=False):
+            col = cols[i % num_cols]
+            i+=1
+            with col:
+                st.metric(label=indexName, value=last,delta=percChange)
     else:
         st.info("Click 'Refresh Data' to fetch the latest data.")
    
 # # Advances vs. Declines
-with col2:
+with st.container():
     st.header("Advances vs. Declines")
     # Add code to fetch and display advances/declines data
     if data:
         fiidiidata = fetch_fiidii_data()
         fiicols = ['category','buyValue','sellValue','netValue']
         fiidiidata = fiidiidata.reset_index(drop=True)
-        st.write(fiidiidata[fiicols])
+        fiidiidata['buyValue'] = pd.to_numeric(fiidiidata['buyValue'], errors='coerce')
+        fiidiidata['sellValue'] = pd.to_numeric(fiidiidata['sellValue'], errors='coerce')
+        fiidiidata['netValue'] = pd.to_numeric(fiidiidata['netValue'], errors='coerce')
+        #st.write(fiidiidata[fiicols])
+        num_cols = 3
+        i =0
+        cols = st.columns(num_cols)
+        metric_card_container = st.container()
+        for category, buyValue, sellValue,netValue  in fiidiidata[fiicols].itertuples(index=False):
+            col = cols[i % num_cols]
+            i+=1
+            #netchange = ((buyValue - sellValue)/(sellValue))
+            with col:
+                st.metric(label=category, value=buyValue,delta=netValue)
     else:
         st.info("Click 'Refresh Data' to fetch the latest data.")
 
-with col3:
+with st.container():
     st.header("Top Gainers")
     # Add code to fetch and display advances/declines data
     if data:
@@ -91,7 +107,7 @@ with col3:
         st.write(topgainers[cols])
     else:
         st.info("Click 'Refresh Data' to fetch the latest data.")
-with col4:
+with st.container():
     st.header("Top Losers")
     # Add code to fetch and display advances/declines data
     if data:
