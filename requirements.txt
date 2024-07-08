@@ -3,4 +3,3 @@ nsepython
 plotly
 jugaad-data
 st-pages
-request
