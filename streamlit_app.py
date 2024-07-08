@@ -4,64 +4,94 @@ import json
 from nsepython import *
 import requests
 
-st.title("💹 My new app")
-st.write(
-    "NSE Stock details app"
-)
-st.write(
-    "Welcome to stock page"
+# Set page title and layout
+st.set_page_config(
+    page_title="NSE Stock Data",
+    layout="wide"  # Use the entire horizontal space
 )
 
-json_file = "stock-data-json/equity-stockIndices500.json"
-with open(json_file,'r') as f:
-    stockData = json.load(f)
+nifty50url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050"
+nifty500url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%20500"
+niftyfnourl = "https://www.nseindia.com/api/equity-stockIndices?index=SECURITIES%20IN%20F%26O"
+nsemarketstatusurl = "https://nseindia.com/api/marketStatus"
+# Initially empty dictionary to store fetched data
+data = 0
+fiidiidata = []
 
-metadata = stockData['metadata']
-#st.table(metadata)
+def fetch_marketstatus_data():
+    tempstatus = nse_index()
+    return tempstatus
 
-df_data = []
-sector_data = []
+def fetch_fiidii_data():
+    fiidiitemp = nse_fiidii()
+    return fiidiitemp
 
-data = stockData['data']
-for keys in data:
-    symbol = keys['symbol']
-    price = keys['lastPrice']
-    df_data.append({"symbol": symbol,"lastTradedPrice":price})
-    
-df = pd.DataFrame(df_data)
-# st.table(df)
+def fetch_top_gainers():
+    topgainers = nse_get_top_gainers()
+    return topgainers
 
-for keys in data:
-    symbol = keys['symbol']
-    pchange = keys['pChange']
-    if "meta" in keys:
-        meta = keys['meta']
-        if "industry" in meta:
-            industry = meta['industry']
-            #print(industry)
-            sector_data.append({"Symbol":symbol,"Industry": industry,"Change":pchange})
-        
-sector_df = pd.DataFrame(sector_data)
+def fetch_top_losers():
+    toplosers = nse_get_top_losers()
+    return toplosers
 
-average_change_by_industry = sector_df.groupby('Industry')['Change'].mean().reset_index()
-average_change_by_industry = average_change_by_industry.sort_values('Change', ascending=False)
-#st.table(average_change_by_industry)
+empty_row1, _ = st.columns(2)
+empty_row2, _ = st.columns(2)
+top_row = st.container()
 
-url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%20500"
+col1, col2 = st.columns(2) 
+col3, col4 = st.columns(2)
 
-nsedata = nsefetch(url)
-nsedf  = pd.DataFrame(nsedata['data'])
+# Button to trigger data refresh
+with top_row:
+    refresh_button = st.button("Refresh NSE Data")
 
-stockdata = nsedata['data']
-for keys in stockdata:
-    if "meta" in keys:
-        meta = keys["meta"]
-        if "industry" in meta:
-            st.write(meta["industry"])
-#st.table(nsedf[['symbol','pChange']])
-#st.table(nsedf)
-# nsestockdata = nsedata["data"]
-# st.write(nsestockdata)
-# nsemeta = json.loads(nsedata['meta'])
-# st.write(nsemeta)
+if refresh_button:
+    tempdata = fetch_marketstatus_data()
+    data = 1
+
+#Nifty summary
+with col1:
+    st.header("Market Summary")
+    if data:
+        filterlist = ['NIFTY 50','NIFTY BANK','INDIA VIX','NIFTY MIDCAP 50','NIFTY MID SELECT','NIFTY FIN SERVICE']
+        filtered_data = tempdata[tempdata['indexName'].isin(filterlist)]
+        neworder = ['indexName','last','previousClose','percChange']
+        filtered_data = filtered_data[neworder]
+        filtered_data = filtered_data.reset_index(drop=True)
+        st.write(filtered_data)
+    else:
+        st.info("Click 'Refresh Data' to fetch the latest data.")
+   
+# # Advances vs. Declines
+with col2:
+    st.header("Advances vs. Declines")
+    # Add code to fetch and display advances/declines data
+    if data:
+        fiidiidata = fetch_fiidii_data()
+        fiicols = ['category','buyValue','sellValue','netValue']
+        fiidiidata = fiidiidata.reset_index(drop=True)
+        st.write(fiidiidata[fiicols])
+    else:
+        st.info("Click 'Refresh Data' to fetch the latest data.")
+
+with col3:
+    st.header("Top Gainers")
+    # Add code to fetch and display advances/declines data
+    if data:
+        topgainers = fetch_top_gainers()
+        cols = ['symbol','change','pChange','totalTradedVolume']
+        st.write(topgainers[cols])
+    else:
+        st.info("Click 'Refresh Data' to fetch the latest data.")
+with col4:
+    st.header("Top Losers")
+    # Add code to fetch and display advances/declines data
+    if data:
+        toplosers = fetch_top_losers()
+        cols = ['symbol','change','pChange','totalTradedVolume']
+        st.write(toplosers[cols])
+    else:
+        st.info("Click 'Refresh Data' to fetch the latest data.")
+
+
 
