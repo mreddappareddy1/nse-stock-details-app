@@ -35,7 +35,6 @@ with st.container():
     if data==1:
         st.header("FnO Stock Details")
         marketData = pd.DataFrame(tempdata)
-        #st.table(marketData)
         fnocols = ['symbol','lastPrice','change','pChange','totalTradedVolume','totalTradedValue','companyName','industry']
         for keys in tempdata:
             symbol = keys['symbol']
@@ -44,6 +43,8 @@ with st.container():
             pChange = keys['pChange']
             totalTradedVolume = keys['totalTradedVolume']
             totalTradedValue = keys['totalTradedValue']
+            chart30dPath = keys['chart30dPath']
+            chartTodayPath = keys['chartTodayPath']
             if "meta" in keys:
                 meta = keys["meta"]
                 if "industry" in meta:
@@ -57,6 +58,8 @@ with st.container():
                                       "Traded Volume (in Crores)": totalTradedVolume/1000000,
                                       "Traded Value (in Crores)": totalTradedValue/1000000,
                                       "Industry": industry,
+                                      "Chart Today": chartTodayPath,
+                                      "Chart 30 Days":chart30dPath
                                       })
         fno_df = pd.DataFrame(flat_data)
         fno_df['Change'] = pd.to_numeric(fno_df['Change'], errors='coerce')
@@ -67,6 +70,25 @@ with st.container():
         fno_df['Traded Volume (in Crores)'] = fno_df['Traded Volume (in Crores)'].round(2)
         fno_df['Traded Value (in Crores)'] = pd.to_numeric(fno_df['Traded Value (in Crores)'], errors='coerce').round(2)
         fno_df['Traded Value (in Crores)'] = fno_df['Traded Value (in Crores)'].round(2)
-        st.table(fno_df)
+        #industryOption = st.selectbox("Select an Industry",fno_df["Industry"],on_change=fetch_fnostock_data)
+        st.dataframe(
+            fno_df,
+            column_config={
+                "Symbol": st.column_config.TextColumn("Symbol"),
+                "Company Name": st.column_config.TextColumn("Company Name",width="medium"),
+                "Last Traded Price": st.column_config.NumberColumn("LTP",format="%.2f",width="small"),
+                "Change": st.column_config.NumberColumn(
+                    "Change",
+                    format="%.2f",
+                    width="small"
+                ),
+                "Traded Volume (in Crores)":st.column_config.NumberColumn("Volume(Cr)",format="%.2f"),
+                "Traded Value (in Crores)":st.column_config.NumberColumn("Value(Cr)",format="%.2f"),
+                "Change in Percent":st.column_config.NumberColumn("Change%",format="%.2f",width="small"),
+                "Chart Today": st.column_config.ImageColumn("Chart Today"),
+                "Chart 30 Days": st.column_config.ImageColumn("Chart 30 Days")
+            },
+            hide_index=True,
+        )
     else:
         st.info("Click 'Refresh Data' to fetch the latest data.")

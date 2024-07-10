@@ -104,7 +104,7 @@ with st.container():
     # Add code to fetch and display advances/declines data
     if data:
         topgainers = fetch_top_gainers()
-        cols = ['symbol','change','pChange','totalTradedVolume']
+        cols = ['symbol','lastPrice','change','pChange','totalTradedVolume']
         st.write(topgainers[cols])
     else:
         st.info("Click 'Refresh Data' to fetch the latest data.")
@@ -113,7 +113,7 @@ with st.container():
     # Add code to fetch and display advances/declines data
     if data:
         toplosers = fetch_top_losers()
-        cols = ['symbol','change','pChange','totalTradedVolume']
+        cols = ['symbol','lastPrice','change','pChange','totalTradedVolume']
         st.write(toplosers[cols])
     else:
         st.info("Click 'Refresh Data' to fetch the latest data.")
