@@ -15,6 +15,7 @@ show_pages(
     [
         Page("streamlit_app.py", "Summary Page", "🏠"),
         Page("pages/Industry_Wise_Change.py", "Industry Wise Change", ":books:"),
+        Page("pages/Individual_Stock_details.py", "Individual Stock Details", ":chart:")
     ]
 )
 
