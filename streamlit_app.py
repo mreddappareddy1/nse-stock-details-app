@@ -76,7 +76,7 @@ with st.container():
    
 # # Advances vs. Declines
 with st.container():
-    st.header("Advances vs. Declines")
+    st.header("FII / DII Data")
     # Add code to fetch and display advances/declines data
     if data:
         fiidiidata = fetch_fiidii_data()
