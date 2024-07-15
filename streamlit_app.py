@@ -15,7 +15,9 @@ show_pages(
     [
         Page("streamlit_app.py", "Summary Page", "🏠"),
         Page("pages/Industry_Wise_Change.py", "Industry Wise Change", ":books:"),
-        Page("pages/Individual_Stock_details.py", "Individual Stock Details", ":chart:")
+        Page("pages/Individual_Stock_details.py", "Individual Stock Details", ":chart:"),
+        Page("pages/Event_Calendar.py","Event Calendar",":calendar:"),
+        Page("pages/Stock_Historical_Data.py","Stock Historical Data",":money_with_wings:")
     ]
 )
 

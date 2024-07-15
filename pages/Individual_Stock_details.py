@@ -18,9 +18,6 @@ def fetch_fnostock_data():
     tempstatus = nsefetch(fnourl)
     return tempstatus
 
-def convert_to_crores(value):
-    return value/10000000
-
 top_row = st.container()
 
 with top_row:
